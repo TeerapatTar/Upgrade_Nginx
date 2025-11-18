@@ -5,3 +5,11 @@
     - name: Print Hello World
       debug:
         msg: "Hello World"
+
+    - name: check Os version
+      ansible.builtin.shell: cat /etc/os-release
+      register: os_version
+      
+    - name: Display OS version
+      debug:
+        var: os_version.stdout_lines
