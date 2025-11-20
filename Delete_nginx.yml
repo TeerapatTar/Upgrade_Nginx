@@ -1,26 +1,18 @@
 ---
-- name: Delete nginx
+- name: Check status nginx
   hosts: 192.168.1.218
   become: yes
   tasks:
-    - name: Check status of nginx service
-      ansible.builtin.systemd:
-        name: nginx
-        state: status
-      register: nginx_service_status
-      ignore_errors: yes
+    - name: Check status of nginx
+      ansible.builtin.service_facts:
 
     - name: Display nginx service status
-      debug:
-        var: nginx_service_status
-
-    # - name: Stop nginx service if running
-    #   ansible.builtin.systemd:
+      debug:  
+        var: services['nginx.service']
+        register: nginx_status
+    
+    # - name: Stop nginx service
+    #   ansible.builtin.service:
     #     name: nginx
     #     state: stopped
-    #   when: nginx_service_status.status == 0
-
-    # - name: Display message about nginx service stopped
-    #   debug:
-    #     msg: "Nginx service has been stopped."
-    #   when: nginx_service_status.status == 0
+    #     when: services['nginx.service'].state == 'running'
