@@ -1,0 +1,11 @@
+---
+- name: Delete nginx
+  hosts: 192.168.1.218
+  become: yes
+  tasks:
+    - name: Gather installed packages
+      ansible.builtin.package_facts: 
+    
+    - name: debug installed nginx version
+      debug:
+        var: ansible_facts.packages.nginx
