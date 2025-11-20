@@ -2,10 +2,6 @@
 - name: Print Hello World
   hosts: 192.168.1.218
   tasks:
-    - name: Print Hello World
-      debug:
-        msg: "Hello World"
-
     - name: check Os version
       ansible.builtin.shell: cat /etc/os-release
       register: os_version
@@ -13,7 +9,8 @@
     - name: Display OS version
       debug:
         var: os_version.stdout_lines
-    
-    - name: Display OS version
-      debug:
-        var: os_version
+
+    - name: check Nginx version
+      ansible.builtin.shell: nginx -v
+      register: nginx_version
+      ignore_errors: yes
