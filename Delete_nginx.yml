@@ -3,31 +3,90 @@
   hosts: 192.168.1.218
   become: yes
   tasks:
-    - name: Check status of nginx
+    - name: Gather service facts
       ansible.builtin.service_facts:
 
-    - name: Display nginx service status
-      debug:  
-        var: services['nginx.service']
+    - name: Set nginx service fact (safe lookup)
+      ansible.builtin.set_fact:
+        nginx_svc: >-
+          {{ ansible_facts.services['nginx.service']
+             | default(ansible_facts.services['nginx'] | default(None)) }}
 
-    - name: check Nginx version
-      ansible.builtin.shell: nginx -v
+    - name: Show nginx service status
+      ansible.builtin.debug:
+        msg: "nginx state={{ nginx_svc.state | default('not installed') }}, enabled={{ nginx_svc.enabled | default('unknown') }}"
+
+    - name: Check Nginx version
+      ansible.builtin.command:
+        cmd: nginx -v
       register: nginx_version
-      ignore_errors: yes
+      failed_when: false
+      changed_when: false
 
-    - name: Display Nginx version
-      debug:
-        var: nginx_version.stderr_lines
+    - name: Display Nginx version output
+      ansible.builtin.debug:
+        msg: "{{ (nginx_version.stderr | default('')) | trim if (nginx_version.stderr | default('')) else (nginx_version.stdout | default('no output')) }}"
 
-    - name: stopped nginx service
+    - name: Stop nginx if running
       ansible.builtin.service:
         name: nginx
         state: stopped
-      when: services['nginx.service'].state == 'running'
+      when: nginx_svc is defined and nginx_svc.state == 'running'
 
-    - name: Display nginx service status after stopping
-      debug:  
-        var: services['nginx.service']
+    - name: Re-gather service facts after possible stop
+      ansible.builtin.service_facts:
+
+    - name: Display nginx service status after actions
+      ansible.builtin.debug:
+        msg: "after: {{ (ansible_facts.services['nginx.service'] | default(ansible_facts.services['nginx'] | default('not installed'))) }}"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    # - name: Check status of nginx
+    #   ansible.builtin.service_facts:
+
+    # - name: Display nginx service status
+    #   debug:  
+    #     var: services['nginx.service']
+
+    # - name: check Nginx version
+    #   ansible.builtin.shell: nginx -v
+    #   register: nginx_version
+    #   ignore_errors: yes
+
+    # - name: Display Nginx version
+    #   debug:
+    #     var: nginx_version.stderr_lines
+
+    # - name: stopped nginx service
+    #   ansible.builtin.service:
+    #     name: nginx
+    #     state: stopped
+    #   when: services['nginx.service'].state == 'running'
+
+    # - name: Display nginx service status after stopping
+    #   debug:  
+    #     var: services['nginx.service']
 
 
 
