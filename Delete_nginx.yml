@@ -3,16 +3,24 @@
   hosts: 192.168.1.218
   become: yes
   tasks:
-    - name: Gather installed packages
-      ansible.builtin.package_facts: 
-    
-    - name: debug installed nginx version
-      debug:
-        var: ansible_facts.packages
+    - name: Check status of nginx service
+      ansible.builtin.systemd:
+        name: nginx
+        state: status
+      register: nginx_service_status
+      ignore_errors: yes
 
-    # - name: Check status of nginx service
+    - name: Display nginx service status
+      debug:
+        var: nginx_service_status
+
+    # - name: Stop nginx service if running
     #   ansible.builtin.systemd:
     #     name: nginx
-    #     state: started
-    #   register: nginx_service_status
-    #   ignore_errors: yes
+    #     state: stopped
+    #   when: nginx_service_status.status == 0
+
+    # - name: Display message about nginx service stopped
+    #   debug:
+    #     msg: "Nginx service has been stopped."
+    #   when: nginx_service_status.status == 0
