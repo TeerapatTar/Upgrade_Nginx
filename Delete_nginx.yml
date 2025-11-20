@@ -9,7 +9,6 @@
     - name: Display nginx service status
       debug:  
         var: services['nginx.service']
-        register: nginx_status
     
     # - name: Stop nginx service
     #   ansible.builtin.service:
