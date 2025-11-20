@@ -19,6 +19,16 @@
       debug:
         var: nginx_version.stderr_lines
 
+    - name: stopped nginx service
+      ansible.builtin.service:
+        name: nginx
+        state: stopped
+      when: services['nginx.service'].state == 'running'
+
+    - name: Display nginx service status after stopping
+      debug:  
+        var: services['nginx.service']
+
 
 
 
