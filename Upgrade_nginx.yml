@@ -14,3 +14,7 @@
       ansible.builtin.shell: nginx -v
       register: nginx_version
       ignore_errors: yes
+
+    - name: Display Nginx version
+      debug:
+        var: nginx_version.stderr_lines
