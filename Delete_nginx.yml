@@ -8,4 +8,11 @@
     
     - name: debug installed nginx version
       debug:
-        var: ansible_facts.packages.nginx
+        var: ansible_facts.packages
+
+    # - name: Check status of nginx service
+    #   ansible.builtin.systemd:
+    #     name: nginx
+    #     state: started
+    #   register: nginx_service_status
+    #   ignore_errors: yes
