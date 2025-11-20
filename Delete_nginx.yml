@@ -33,9 +33,10 @@
         name: nginx
         state: stopped
       when:
-        - nginx_svc is not none
+        - nginx_svc is mapping
+        - nginx_svc.state is defined
         - nginx_svc.state == 'running'
-
+    
     - name: Re-gather service facts after possible stop
       ansible.builtin.service_facts:
 
