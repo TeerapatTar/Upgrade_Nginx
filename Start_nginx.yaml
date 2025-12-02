@@ -4,11 +4,26 @@
   become: yes
 
   tasks:
-    - name: check status nginx
+    - name: Gather service facts
       ansible.builtin.service_facts:
     
     - name: Set nginx service fact (safe lookup)
-      debug:
-        msg: >-
+      ansible.builtin.set_fact:
+        nginx_svc: >-
           {{ ansible_facts.services['nginx.service']
-             | default(ansible_facts.services['nginx'] | default('not installed')) }}
+             | default(ansible_facts.services['nginx'] | default(None)) }}
+
+    - name: Display nginx service status before actions
+      ansible.builtin.debug:
+        msg: "nginx state={{ nginx_svc.state | default('not installed') }}, enabled={{ nginx_svc.enabled | default('unknown') }}"
+
+    # - name: Start nginx if not running
+    #   ansible.builtin.service:
+    #     name: nginx
+    #     state: started
+    #   when:
+    #     - nginx_svc is not none
+    #     - nginx_svc.state != 'running'
+
+    # - name: Re-gather service facts after start
+    #   ansible.builtin.service_facts:
