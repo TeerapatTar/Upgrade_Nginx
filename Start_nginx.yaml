@@ -4,34 +4,11 @@
   become: yes
 
   tasks:
-  
-    - name: Check nginx service status
+    - name: check status nginx
       ansible.builtin.service_facts:
-
-    - name: Show nginx service status
-      ansible.builtin.debug:  nginx.service
-        # msg: "{{ ansible_facts.services['nginx.service'] | default(ansible_facts.services['nginx'] | default('not installed')) }}"
-
-    # - name: Check Nginx version
-    #   ansible.builtin.command: nginx -v
-    #   register: nginx_version
-    #   failed_when: false
-    #   changed_when: false
-    #   ignore_errors: yes
-
-    # - name: Display Nginx version output
-    #   ansible.builtin.debug:
-    #     msg: "{{ nginx_version.stderr | default(nginx_version.stdout) | default('nginx not installed') }}"
-    # - name: Start nginx service
-    #   ansible.builtin.service:
-    #     name: nginx
-    #     state: started
-    #   when: nginx_version.rc == 0
-    #   ignore_errors: yes
-
-    # - name: Re-gather service facts after possible start
-    #   ansible.builtin.service_facts:
-
-    # - name: Display nginx service status after actions
-    #   ansible.builtin.debug:
-    #     msg: "{{ ansible_facts.services['nginx.service'] | default(ansible_facts.services['nginx'] | default('not installed')) }}"
+    
+    - name: Set nginx service fact (safe lookup)
+      debug:
+        msg: >-
+          {{ ansible_facts.services['nginx.service']
+             | default(ansible_facts.services['nginx'] | default('not installed')) }}
